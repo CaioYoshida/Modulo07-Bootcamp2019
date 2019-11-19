@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { MdAddShoppingCart } from 'react-icons/md';
 import api from '../../services/api';
 
-import { addToCart } from '../../store/modules/cart/action';
+import { addToCartRequest } from '../../store/modules/cart/action';
 
 import { ProductList } from './styles';
 import { formatPrice } from '../../util/format';
@@ -24,11 +24,11 @@ class Home extends Component {
     this.setState({ products: data });
   }
 
-  handleAddProduct = product => {
+  handleAddProduct = id => {
     // "dispatch" dispara uma action ao redux
     const { dispatch } = this.props;
 
-    dispatch(addToCart(product));
+    dispatch(addToCartRequest(id));
   };
 
   render() {
@@ -43,7 +43,10 @@ class Home extends Component {
             <strong> {item.title} </strong>
             <span> {item.priceFormatted} </span>
 
-            <button type="button" onClick={() => this.handleAddProduct(item)}>
+            <button
+              type="button"
+              onClick={() => this.handleAddProduct(item.id)}
+            >
               <div>
                 <MdAddShoppingCart size={16} color="#FFF" />{' '}
                 {amount[item.id] ? amount[item.id] : 0}
