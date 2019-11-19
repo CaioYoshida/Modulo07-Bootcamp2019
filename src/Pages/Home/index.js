@@ -1,7 +1,69 @@
-import React from 'react';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { MdAddShoppingCart } from 'react-icons/md';
+import api from '../../services/api';
 
-// import { Container } from './styles';
+import { addToCart } from '../../store/modules/cart/action';
 
-export default function Home() {
-  return <h1>Home</h1>;
+import { ProductList } from './styles';
+import { formatPrice } from '../../util/format';
+
+class Home extends Component {
+  state = {
+    products: [],
+  };
+
+  async componentDidMount() {
+    const response = await api.get('products');
+
+    const data = response.data.map(product => ({
+      ...product,
+      priceFormatted: formatPrice(product.price),
+    }));
+
+    this.setState({ products: data });
+  }
+
+  handleAddProduct = product => {
+    // "dispatch" dispara uma action ao redux
+    const { dispatch } = this.props;
+
+    dispatch(addToCart(product));
+  };
+
+  render() {
+    const { products } = this.state;
+    const { amount } = this.props;
+
+    return (
+      <ProductList>
+        {products.map(item => (
+          <li key={item.id}>
+            <img src={item.image} alt={item.title} />
+            <strong> {item.title} </strong>
+            <span> {item.priceFormatted} </span>
+
+            <button type="button" onClick={() => this.handleAddProduct(item)}>
+              <div>
+                <MdAddShoppingCart size={16} color="#FFF" />{' '}
+                {amount[item.id] ? amount[item.id] : 0}
+              </div>
+
+              <span>ADICIONAR AO CARRINHO</span>
+            </button>
+          </li>
+        ))}
+      </ProductList>
+    );
+  }
 }
+
+const mapStateToProps = state => ({
+  amount: state.cart.reduce((amount, product) => {
+    amount[product.id] = product.amount;
+
+    return amount;
+  }, {}),
+});
+
+export default connect(mapStateToProps)(Home);
