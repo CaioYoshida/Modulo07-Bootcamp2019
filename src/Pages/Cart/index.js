@@ -7,18 +7,21 @@ import {
 
 import { connect } from 'react-redux';
 
-import { removeFromCart, updateAmount } from '../../store/modules/cart/action';
+import {
+  removeFromCart,
+  updateAmountRequest,
+} from '../../store/modules/cart/action';
 
 import { Container, ProductTable, Total } from './styles';
 import { formatPrice } from '../../util/format';
 
 function Cart({ redux, dispatch, total }) {
   function increment(product) {
-    dispatch(updateAmount(product.id, product.amount + 1));
+    dispatch(updateAmountRequest(product.id, product.amount + 1));
   }
 
   function decrement(product) {
-    dispatch(updateAmount(product.id, product.amount - 1));
+    dispatch(updateAmountRequest(product.id, product.amount - 1));
   }
 
   return (
